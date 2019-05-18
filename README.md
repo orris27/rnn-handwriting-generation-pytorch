@@ -10,7 +10,7 @@ This repo only implements one function:
 
 ### How to Use
 1. Extract `lineStrokes-all.tar.gz` and `ascii-all.tar.gz` to the directory `./data`. You can refer to `download.sh` for more informations
-2. Run this code
+2. Train the model, which will be saved as `data/pkl/model_<epoch_index>.pkl`
 ```
 python train.py
 ```
@@ -30,4 +30,4 @@ This is the result with default setting:
 * rnn length = 300
 * num of layers = 2
 * number of mixture gaussian = 20
-* epochs: 20+
+* epochs: 25
