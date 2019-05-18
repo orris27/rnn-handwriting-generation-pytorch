@@ -7,6 +7,8 @@ from config import *
 from utils import DataLoader, draw_strokes_random_color
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+os.makedirs('data', exist_ok=True)
+os.makedirs('data/pkl', exist_ok=True)
 
 data_loader = DataLoader(args.batch_size, args.T, args.data_scale,
                          chars=args.chars, points_per_char=args.points_per_char)
@@ -28,6 +30,6 @@ for e in range(args.num_epochs):
         if b % 100 == 0:
             print('batches %d: loss=%.6f'%(b, model.loss.cpu().item()))
     if e % 5 == 0:
-        save_path = 'data/model_%d.pkl'%(e)
+        save_path = 'data/pkl/model_%d.pkl'%(e)
         print('Start saving model: %s'%(save_path))
         torch.save(model.state_dict(), save_path)
