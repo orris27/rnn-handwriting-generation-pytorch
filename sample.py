@@ -1,4 +1,4 @@
-#import tensorflow as tf
+import os
 import torch
 import numpy as np
 import model as m
@@ -18,12 +18,13 @@ args.action = 'sample'
 
 model = m.Model(args).to(device)
 
-model.load_state_dict(torch.load(args.load_path))
-model = model.eval()
+if args.load_path and os.path.exists(args.load_path):
+    model.load_state_dict(torch.load(args.load_path))
+    model = model.eval()
 
-strokes = model.sample(800)
-print(strokes)
-import pickle
-with open('strokes.pkl', 'wb') as f:
-    pickle.dump(strokes, f)
-draw_strokes_random_color(strokes, factor=0.1, svg_filename='sample' + '.normal.svg')
+    strokes = model.sample(800)
+    print(strokes)
+    import pickle
+    with open('strokes.pkl', 'wb') as f:
+        pickle.dump(strokes, f)
+    draw_strokes_random_color(strokes, factor=0.1, svg_filename='sample' + '.normal.svg')
