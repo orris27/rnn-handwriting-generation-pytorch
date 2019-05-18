@@ -95,7 +95,7 @@ class Model(torch.nn.Module):
 
             x = np.zeros([1, 1, 3], np.float32)
             choose_old = False
-            if choose_old = True:
+            if choose_old == True:
                 r = np.random.rand()
                 accu = 0
                 for m in range(self.args.M):
