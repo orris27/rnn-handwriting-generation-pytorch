@@ -1,6 +1,8 @@
 import argparse
 
 parser = argparse.ArgumentParser()
+parser.add_argument('--sample_random', type=bool, default=True,
+                    help='')
 parser.add_argument('--load', type=bool, default=False,
                     help='')
 parser.add_argument('--model_path', type=str, default='data/model.pkl',

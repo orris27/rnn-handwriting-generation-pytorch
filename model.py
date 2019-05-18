@@ -94,8 +94,7 @@ class Model(torch.nn.Module):
             end_of_stroke, pi, mu1, mu2, sigma1, sigma2, rho = end_of_stroke.cpu().detach().numpy(), pi.cpu().detach().numpy(), mu1.cpu().detach().numpy(), mu2.cpu().detach().numpy(), sigma1.cpu().detach().numpy(), sigma2.cpu().detach().numpy(), rho.cpu().detach().numpy()
 
             x = np.zeros([1, 1, 3], np.float32)
-            choose_old = False
-            if choose_old == True:
+            if self.args.sample_random == True:
                 r = np.random.rand()
                 accu = 0
                 for m in range(self.args.M):
