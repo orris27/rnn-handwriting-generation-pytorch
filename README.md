@@ -12,19 +12,10 @@ This repo only has one function:
 
 #### Handwriting Prediction
 
-![sample.normal.svg](https://cdn.rawgit.com/snowkylin/rnn-handwriting-generation/master/sample.normal.svg)
+![sample.normal.svg](./sample.normal.svg)
 This is the result with default setting:
 * rnn state size = 256
 * rnn length = 300
 * num of layers = 2
 * number of mixture gaussian = 20
-
-and 20+ epochs. Not so fancy but can be recognized as something like handwritting, huh?
-
-#### Handwriting Synthesis
-
-![sample.normal.biased.3.svg](https://cdn.rawgit.com/snowkylin/rnn-handwriting-generation/master/sample.normal.biased.3.svg)
-
-This is the result with the string "a quick brown fox jumps over the lazy dog".
-
-In addition, [the scribe project by greydanus](https://github.com/greydanus/scribe) also helps me a lot, expecially the use of `tf.batch_matmul()`.
+* epochs: 20+
