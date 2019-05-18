@@ -4,9 +4,21 @@ This is a PyTorch implementation of *[Generating Sequences With Recurrent Neural
 
 This code is based on *[rnn-handwriting-generation](https://github.com/snowkylin/rnn-handwriting-generation)*. Many thanks for the authors!
 
-This repo only has one function:
+This repo only implements one function:
 
 * **Handwriting Prediction**: Randomly generate a line of handwriting (set `mode=predict`). 
+
+### How to Use
+1. Extract `lineStrokes-all.tar.gz` and `ascii-all.tar.gz` to the directory `./data`. You can refer to `download.sh` for more informations
+2. Run this code
+```
+python train.py
+```
+3. Sample results
+```
+python sample.py --load_path=data/pkl/model_25.pkl
+```
+4. The sampled result is saved as SVG file named as `sample.normal.svg`
 
 ### Sample Result
 
