@@ -37,7 +37,8 @@ class Model(torch.nn.Module):
         x = torch.Tensor(x).to(device)
         y = torch.Tensor(y).to(device)
 
-        output_list, final_state = self.stacked_cell(x)
+        #output_list, final_state = self.stacked_cell(x)
+        output_list, final_state = self.stacked_cell(x, None)
 
         output = self.fc_output(output_list.reshape(-1, self.args.rnn_state_size)) # (batch_size * args.T, self.NOUT=121)
 
@@ -81,7 +82,8 @@ class Model(torch.nn.Module):
 
         for i in range(length - 1):
         
-            output_list, final_state = self.stacked_cell(torch.Tensor(x).to(device))
+            #output_list, final_state = self.stacked_cell(torch.Tensor(x).to(device))
+            output_list, final_state = self.stacked_cell(torch.Tensor(x).to(device), None)
             output = self.fc_output(output_list.reshape(-1, self.args.rnn_state_size)) # (1, NOUT:121)
             end_of_stroke = 1 / (1 + torch.exp(output[:, 0])) # (1, )
             pi_hat, mu1, mu2, sigma1_hat, sigma2_hat, rho_hat = torch.split(output[:, 1:], self.args.M, 1)
