@@ -94,6 +94,7 @@ class Model(torch.nn.Module):
 
             x = np.zeros([1, 1, 3], np.float32)
             if self.args.sample_random == True:
+                print('Sample random: ON')
                 r = np.random.rand()
                 accu = 0
                 for m in range(self.args.M):
@@ -106,6 +107,7 @@ class Model(torch.nn.Module):
                         )
                         break
             else:
+                print('Sample random: OFF')
                 for m in range(self.args.M):
                     x[0, 0, 0:2] += pi[0, m] * np.random.multivariate_normal(
                             [mu1[0, m], mu2[0, m]],

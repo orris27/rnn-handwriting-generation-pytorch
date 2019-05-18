@@ -18,7 +18,7 @@ args.action = 'sample'
 
 model = m.Model(args).to(device)
 
-model.load_state_dict(torch.load(args.model_path))
+model.load_state_dict(torch.load(args.load_path))
 model = model.eval()
 
 strokes = model.sample(800)
