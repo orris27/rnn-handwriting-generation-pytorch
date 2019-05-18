@@ -1,11 +1,9 @@
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--sample_random', type=bool, default=True,
+parser.add_argument('--sample_random', type=bool, default=False,
                     help='')
-parser.add_argument('--load', type=bool, default=False,
-                    help='')
-parser.add_argument('--model_path', type=str, default='data/model.pkl',
+parser.add_argument('--load_path', type=str, default='None',
                     help='')
 parser.add_argument('--batch_size', type=int, default=50,
                     help='minibatch size')

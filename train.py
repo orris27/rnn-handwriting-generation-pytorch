@@ -16,9 +16,9 @@ args.c_dimension = len(data_loader.chars) + 1
 args.action = 'train'
 
 model = m.Model(args).to(device)
-if args.load == True and os.path.exists(args.model_path):
-    print('Start loading model: %s'%(args.model_path))
-    model.load_state_dict(torch.load(args.model_path))
+if args.load_path and os.path.exists(args.load_path):
+    print('Start loading model: %s'%(args.load_path))
+    model.load_state_dict(torch.load(args.load_path))
 for e in range(args.num_epochs):
     print("epoch %d" % e)
     data_loader.reset_batch_pointer()
@@ -28,5 +28,6 @@ for e in range(args.num_epochs):
         if b % 100 == 0:
             print('batches %d: loss=%.6f'%(b, model.loss.cpu().item()))
     if e % 5 == 0:
-        print('Start saving model: %s'%(args.model_path))
-        torch.save(model.state_dict(), args.model_path)
+        save_path = 'data/model_%d.pkl'%(e)
+        print('Start saving model: %s'%(save_path))
+        torch.save(model.state_dict(), save_path)
