@@ -2,9 +2,9 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--sample_random', type=bool, default=False,
-                    help='')
+                    help='apply random-control sample or not')
 parser.add_argument('--load_path', type=str, default='None',
-                    help='')
+                    help='the model parameters file to load')
 parser.add_argument('--batch_size', type=int, default=50,
                     help='minibatch size')
 parser.add_argument('--chars', type=str, default='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ',
