@@ -29,10 +29,4 @@ parser.add_argument('--learning_rate', type=float, default=0.001,
                     help='learning rate')
 parser.add_argument('--b', type=float, default=3.0,
                     help='biased sampling')
-# parser.add_argument('--decay_rate', type=float, default=0.95,
-#                      help='decay rate for rmsprop')
-# parser.add_argument('--keep_prob', type=float, default=0.8,
-#                     help='dropout keep probability')
-# parser.add_argument('--grad_clip', type=float, default=10.,
-#                      help='clip gradients at this value')
 args = parser.parse_args()
