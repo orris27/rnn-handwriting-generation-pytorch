@@ -92,7 +92,7 @@ class Model(torch.nn.Module):
             pi_hat, mu1, mu2, sigma1_hat, sigma2_hat, rho_hat = torch.split(output[:, 1:], self.args.M, 1)
             pi_exp = torch.exp(pi_hat * (1 + self.args.b)) # args.b=3
             pi_exp_sum = torch.sum(pi_exp, 1)
-            pi = pi_exp / self._expand(pi_exp_sum, 1, self.args.M)
+            pi = pi_exp / (pi_exp_sum.unsqueeze(1).repeat(1, self.args.M))
             sigma1 = torch.exp(sigma1_hat - self.args.b)
             sigma2 = torch.exp(sigma2_hat - self.args.b)
             rho = torch.tanh(rho_hat)
