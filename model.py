@@ -18,8 +18,8 @@ class Model(torch.nn.Module):
 
         self.optimizer = torch.optim.Adam(params=self.parameters(), lr=args.learning_rate)
 
-    def _expand(self, x, dim, N):
-        return torch.cat([x.unsqueeze(dim) for _ in range(N)], dim)
+#    def _expand(self, x, dim, N):
+#        return torch.cat([x.unsqueeze(dim) for _ in range(N)], dim)
 
     def _bivariate_gaussian(self, x1, x2, mu1, mu2, sigma1, sigma2, rho):
         z = torch.pow((x1 - mu1) / sigma1, 2) + torch.pow((x2 - mu2) / sigma2, 2) \
@@ -45,14 +45,18 @@ class Model(torch.nn.Module):
 
         end_of_stroke = 1 / (1 + torch.exp(output[:, 0])) # (batch_size * args.T,) 
         pi_hat, mu1, mu2, sigma1_hat, sigma2_hat, rho_hat = torch.split(output[:, 1:], self.args.M, 1)
-        pi_exp = torch.exp(pi_hat * (1 + self.args.b)) # args.b=3
-        pi_exp_sum = torch.sum(pi_exp, 1)
-        pi = pi_exp / self._expand(pi_exp_sum, 1, self.args.M)
+
+#        pi_exp = torch.exp(pi_hat * (1 + self.args.b)) # args.b=3
+#        pi_exp_sum = torch.sum(pi_exp, 1)
+#        pi = pi_exp / self._expand(pi_exp_sum, 1, self.args.M)
+        pi = torch.softmax(pi_hat * (1 + self.args,b))
+
         sigma1 = torch.exp(sigma1_hat - self.args.b)
         sigma2 = torch.exp(sigma2_hat - self.args.b)
         rho = torch.tanh(rho_hat)
         gaussian = pi * self._bivariate_gaussian(
-            self._expand(y1, 1, self.args.M), self._expand(y2, 1, self.args.M),
+#            self._expand(y1, 1, self.args.M), self._expand(y2, 1, self.args.M),
+            y1.unsqueeze(1).repeat(self.args.M), y2.unsqueeze(1).repeat(self.args.M),
             mu1, mu2, sigma1, sigma2, rho
         )
         eps = 1e-20
