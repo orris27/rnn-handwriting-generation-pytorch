@@ -58,7 +58,7 @@ class Model(torch.nn.Module):
         rho = torch.tanh(rho_hat)
         gaussian = pi * self._bivariate_gaussian(
 #            self._expand(y1, 1, self.args.M), self._expand(y2, 1, self.args.M),
-            y1.unsqueeze(1).repeat(self.args.M), y2.unsqueeze(1).repeat(self.args.M),
+            y1.unsqueeze(1).repeat(1, self.args.M), y2.unsqueeze(1).repeat(1, self.args.M),
             mu1, mu2, sigma1, sigma2, rho
         )
         eps = 1e-20
