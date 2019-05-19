@@ -49,7 +49,9 @@ class Model(torch.nn.Module):
 #        pi_exp = torch.exp(pi_hat * (1 + self.args.b)) # args.b=3
 #        pi_exp_sum = torch.sum(pi_exp, 1)
 #        pi = pi_exp / self._expand(pi_exp_sum, 1, self.args.M)
-        pi = torch.softmax(pi_hat * (1 + self.args,b))
+        #pi = torch.softmax(pi_hat * (1 + self.args,b))
+        #pi = torch.softmax(pi_hat)
+        pi = pi_hat.softmax(1)
 
         sigma1 = torch.exp(sigma1_hat - self.args.b)
         sigma2 = torch.exp(sigma2_hat - self.args.b)
