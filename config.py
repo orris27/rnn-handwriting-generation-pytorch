@@ -3,7 +3,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--sample_random', type=bool, default=False,
                     help='apply random-control sample or not')
-parser.add_argument('--load_path', type=str, default=None,
+parser.add_argument('--model_path', type=str, default='synthesis',
                     help='the model parameters file to load')
 parser.add_argument('--batch_size', type=int, default=50,
                     help='minibatch size')
