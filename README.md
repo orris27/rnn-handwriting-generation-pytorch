@@ -24,7 +24,7 @@ python sample.py --load_path=data/pkl/model_25.pkl
 
 #### Handwriting Prediction
 
-![sample.normal.svg](./sample.normal.svg)
+![sample.normal.svg](./images/sample.normal.svg)
 This is the result with default setting:
 * rnn state size = 256
 * rnn length = 300
