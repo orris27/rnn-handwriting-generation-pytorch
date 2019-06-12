@@ -161,24 +161,24 @@ class Model(torch.nn.Module):
 
             x = np.zeros([1, 1, 3], np.float32)
 #            if self.args.sample_random == True:
-#                r = np.random.rand()
-#                accu = 0
-#                for m in range(self.args.M):
-#                    accu += pi[0, m]
-#                    if accu > r:
-#                        x[0, 0, 0:2] = np.random.multivariate_normal(
-#                            [mu1[0, m], mu2[0, m]],
-#                            [[np.square(sigma1[0, m]), rho[0, m] * sigma1[0, m] * sigma2[0, m]],
-#                             [rho[0, m] * sigma1[0, m] * sigma2[0, m], np.square(sigma2[0, m])]]
-#                        )
-#                        break
-#            else:
+            r = np.random.rand()
+            accu = 0
             for m in range(self.args.M):
-                x[0, 0, 0:2] += pi[0, m] * np.random.multivariate_normal(
+                accu += pi[0, m]
+                if accu > r:
+                    x[0, 0, 0:2] = np.random.multivariate_normal(
                         [mu1[0, m], mu2[0, m]],
                         [[np.square(sigma1[0, m]), rho[0, m] * sigma1[0, m] * sigma2[0, m]],
                          [rho[0, m] * sigma1[0, m] * sigma2[0, m], np.square(sigma2[0, m])]]
                     )
+                    break
+#            else:
+#            for m in range(self.args.M):
+#                x[0, 0, 0:2] += pi[0, m] * np.random.multivariate_normal(
+#                        [mu1[0, m], mu2[0, m]],
+#                        [[np.square(sigma1[0, m]), rho[0, m] * sigma1[0, m] * sigma2[0, m]],
+#                         [rho[0, m] * sigma1[0, m] * sigma2[0, m], np.square(sigma2[0, m])]]
+#                    )
             e = np.random.rand() # bernouli
             if e < end_of_stroke:
                 x[0, 0, 2] = 1
