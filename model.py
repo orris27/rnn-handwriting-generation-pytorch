@@ -124,7 +124,9 @@ class Model(torch.nn.Module):
             if self.args.mode == 'predict':
                 output_list, final_state = self.stacked_cell(torch.Tensor(x).to(device), final_state) # !!! The final state argument is important because the PyTorch LSTM would initialize its states otherwise. Hence, we suggest that we should alwayes call LSTM with its initial states. None represents the empty states.
             else:
-                cell1_state = self.rnn_cell1(torch.cat([torch.Tensor(x).to(device)[:,t,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
+                x = torch.Tensor(x).to(device)
+
+                cell1_state = self.rnn_cell1(torch.cat([x[:,t,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
                 k_gaussian = self.h2k(cell1_state[0]) # (B, K * 3)
 
                 alpha_hat, beta_hat, kappa_hat = torch.split(k_gaussian, self.args.K, dim=1) # (B, K)
