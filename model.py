@@ -145,7 +145,7 @@ class Model(torch.nn.Module):
 
                 #output_list.append(cell2_state[0])
                 #output_list[:, t,:] = cell2_state[0]
-                output_list = cell_state[0]
+                output_list = cell2_state[0]
 
 
             output = self.fc_output(output_list.reshape(-1, self.args.rnn_state_size)) # (1, NOUT:121)
