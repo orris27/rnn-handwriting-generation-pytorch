@@ -171,7 +171,7 @@ class DataLoader():
     def __init__(self, batch_size=50, seq_length=300, scale_factor = 10, limit = 500,
                  chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ',
                  points_per_char=25):
-        self.data_dir = "./data"
+        self.data_dir = "./data/raw"
         self.batch_size = batch_size
         self.seq_length = seq_length
         self.scale_factor = scale_factor # divide data by this factor
