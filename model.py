@@ -55,7 +55,7 @@ class Model(torch.nn.Module):
                 cell1_state = self.rnn_cell1(torch.cat([x[:,t,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
                 k_gaussian = self.h2k(cell1_state[0]) # (B, K * 3)
 
-                alpha_hat, beta_hat, kappa_hat = torch.split(k_gaussian, k, dim=1) # (B, K)
+                alpha_hat, beta_hat, kappa_hat = torch.split(k_gaussian, self.args.K, dim=1) # (B, K)
 
                 alpha = torch.exp(alpha_hat).unsqueeze(2) # (B, K, 1)
                 beta = torch.exp(beta_hat).unsqueeze(2) # (B, K, 1)
