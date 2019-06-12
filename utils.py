@@ -193,7 +193,6 @@ class DataLoader():
         # create data file from raw xml files from iam handwriting source.
 
         # build the list of xml files
-        print('rootDir:', rootDir)
         filelist = []
         # Set the directory you want to start from
         rootDir = data_dir
