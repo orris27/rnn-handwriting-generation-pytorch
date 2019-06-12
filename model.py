@@ -116,8 +116,8 @@ class Model(torch.nn.Module):
             final_state = None
         else:
             cell1_state, cell2_state = None, None
-            w = torch.zeros(1, self.args.c_dimension)
-            kappa_prev = torch.zeros(1, self.args.K, 1)
+            w = torch.zeros(1, self.args.c_dimension).to(device)
+            kappa_prev = torch.zeros(1, self.args.K, 1).to(device)
             
         for t in range(length - 1):
             if self.args.mode == 'predict':
