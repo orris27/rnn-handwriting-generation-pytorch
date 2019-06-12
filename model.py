@@ -19,11 +19,12 @@ class Model(torch.nn.Module):
         if args.mode == 'predict':
             self.stacked_cell = torch.nn.LSTM(input_size=3, hidden_size=args.rnn_state_size, num_layers=2, batch_first=True)
         else: # synthesis
-            self.rnn_cell1 = nn.LSTMCell(input_size=?, hidden_size=args.rnn_state_size, batch_first=True)
-            self.rnn_cell2 = nn.LSTMCell(input_size=?, hidden_size=args.rnn_state_size, batch_first=True)
+            self.rnn_cell1 = nn.LSTMCell(input_size=3, hidden_size=args.rnn_state_size, batch_first=True)
+            self.rnn_cell2 = nn.LSTMCell(input_size=3, hidden_size=args.rnn_state_size, batch_first=True)
             self.h2k = nn.Linear(args.rnn_state_size, args.K * 3)
-            self.init_kappa = torch.zeros([args.batch_size, args.c_dimension])
-            self.init_w=  
+            #self.init_kappa = torch.zeros([args.batch_size, args.c_dimension])
+            #self.init_w =  
+            #u = expand(expand(np.array([i for i in range(args.U)], dtype=np.float32), 0, args.K), 0, args.batch_size)
 
         self.optimizer = torch.optim.Adam(params=self.parameters(), lr=args.learning_rate)
 
