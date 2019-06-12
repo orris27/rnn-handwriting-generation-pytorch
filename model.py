@@ -120,7 +120,7 @@ class Model(torch.nn.Module):
             kappa_prev = torch.zeros(1, self.args.K, 1)
             
         for i in range(length - 1):
-            if args.mode == 'predict':
+            if self.args.mode == 'predict':
                 output_list, final_state = self.stacked_cell(torch.Tensor(x).to(device), final_state) # !!! The final state argument is important because the PyTorch LSTM would initialize its states otherwise. Hence, we suggest that we should alwayes call LSTM with its initial states. None represents the empty states.
             else:
                 cell1_state = self.rnn_cell1(torch.cat([torch.Tensor(x).to(device)[:,t,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
