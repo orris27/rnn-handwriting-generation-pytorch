@@ -51,7 +51,7 @@ class Model(torch.nn.Module):
             kappa_prev = torch.zeros([self.args.batch_size, self.args.K, 1]).to(device)
             cell1_state, cell2_state = None, None
 
-            output_list = torch.zeros(self.args.batch_size, self.args.T, self.NOUT)
+            output_list = torch.zeros(self.args.batch_size, self.args.T, self.rnn_state_size).to(device)
             for t in range(self.args.T):
                 cell1_state = self.rnn_cell1(torch.cat([x[:,t,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
                 k_gaussian = self.h2k(cell1_state[0]) # (B, K * 3)
