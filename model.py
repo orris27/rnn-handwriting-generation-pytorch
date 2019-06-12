@@ -51,6 +51,7 @@ class Model(torch.nn.Module):
             kappa_prev = torch.zeros([self.args.batch_size, self.args.K, 1]).to(device)
             cell1_state, cell2_state = None, None
 
+            output_list = torch.zeros(self.args.batch_size, self.args.T, self.NOUT)
             for t in range(self.args.T):
                 cell1_state = self.rnn_cell1(torch.cat([x[:,t,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
                 k_gaussian = self.h2k(cell1_state[0]) # (B, K * 3)
@@ -71,7 +72,8 @@ class Model(torch.nn.Module):
 
                 cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w], 1), cell2_state)
 
-                output_list.append(cell2_state[0])
+                #output_list.append(cell2_state[0])
+                output_list[:, t,:] = cell2_state[0]
 
         output = self.fc_output(output_list.reshape(-1, self.args.rnn_state_size)) # (batch_size * args.T, self.NOUT=121)
         y1, y2, y_end_of_stroke = torch.unbind(y.view(-1, 3), dim=1) # (batch_size * args.T, )
