@@ -20,7 +20,7 @@ class Model(torch.nn.Module):
         self.stacked_cell = torch.nn.LSTM(input_size=3, hidden_size=args.rnn_state_size, num_layers=2, batch_first=True)
         #else: # synthesis
         self.rnn_cell1 = nn.LSTMCell(input_size=3 + args.c_dimension, hidden_size=args.rnn_state_size)
-        self.rnn_cell2 = nn.LSTMCell(input_size=3 + args.c_dimension, hidden_size=args.rnn_state_size)
+        self.rnn_cell2 = nn.LSTMCell(input_size=3 + args.c_dimension + args.rnn_state_size, hidden_size=args.rnn_state_size)
         self.h2k = nn.Linear(args.rnn_state_size, args.K * 3)
         self.u = torch.arange(args.U).float().unsqueeze(0).repeat(args.K, 1) # (args.K, args.U)
         self.u = self.u.unsqueeze(0).repeat(args.batch_size, 1, 1).to(device) # (B, args.K, args.U)
@@ -63,9 +63,11 @@ class Model(torch.nn.Module):
                 self.kappa = kappa_prev + torch.exp(kappa_hat).unsqueeze(2) # (B, K, 1)
                 kappa_prev = self.kappa
 
-                self.phi = torch.sum(torch.exp(torch.pow(-self.u + self.kappa, 2) * (-beta)) * alpha, 1, keepdim=True) # (B, K, 1)
+                # self.u: (B, K, U). self.kappa: (B, K, 1)
+                self.phi = torch.sum(torch.exp(torch.pow(-self.u + self.kappa, 2) * (-beta)) * alpha, 1, keepdim=True) # (B, 1, U)
 
-                w = torch.squeeze(torch.matmul(self.phi, torch.Tensor(c_vec).to(device)), 1) # torch.matmul can execute batch_mm.
+                # c_vec: (B, U, c_dimension)
+                w = torch.squeeze(torch.matmul(self.phi, torch.Tensor(c_vec).to(device)), 1) # (B, c_dimension), torch.matmul can execute batch_mm.
 
                 cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w], 1), cell2_state)
 
