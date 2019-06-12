@@ -24,7 +24,9 @@ class Model(torch.nn.Module):
             self.h2k = nn.Linear(args.rnn_state_size, args.K * 3)
             #self.init_kappa = torch.zeros([args.batch_size, args.c_dimension])
             #self.init_w =  
-            self.u = expand(expand(np.array([i for i in range(args.U)], dtype=np.float32), 0, args.K), 0, args.batch_size)
+            #self.u = expand(expand(np.array(list(args.U), dtype=np.float32), 0, args.K), 0, args.batch_size)
+            self.u = torch.arange(args.U).float().unsqueeze(0).repeat(args.K, 1) # (args.K, args.U)
+            self.u = self.u.unsqueeze(0).repeat(args.batch_size, 1, 1) # (B, args.K, args.U)
 
         self.optimizer = torch.optim.Adam(params=self.parameters(), lr=args.learning_rate)
 
@@ -64,7 +66,7 @@ class Model(torch.nn.Module):
                 self.kappa = kappa_prev + torch.exp(kappa_hat).unsqueeze(2) # (B, K, 1)
                 kappa_prev = self.kappa
 
-                self.phi = torch.sum(torch.exp(torch.pow(-u + self.kappa, 2) * (-beta)) * alpha, 1, keepdim=True) # (B, K, 1)
+                self.phi = torch.sum(torch.exp(torch.pow(-self.u + self.kappa, 2) * (-beta)) * alpha, 1, keepdim=True) # (B, K, 1)
 
                 w = torch.squeeze(torch.matmul(self.phi, c_vec), [1]) # torch.matmul can execute batch_mm.
 
