@@ -126,7 +126,7 @@ class Model(torch.nn.Module):
             else:
                 x = torch.Tensor(x).to(device)
 
-                cell1_state = self.rnn_cell1(torch.cat([x[:,t,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
+                cell1_state = self.rnn_cell1(torch.cat([x[:,0,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
                 k_gaussian = self.h2k(cell1_state[0]) # (B, K * 3)
 
                 alpha_hat, beta_hat, kappa_hat = torch.split(k_gaussian, self.args.K, dim=1) # (B, K)
@@ -141,7 +141,7 @@ class Model(torch.nn.Module):
 
                 w = torch.squeeze(torch.matmul(self.phi, torch.Tensor([s]).to(device)), 1) # torch.matmul can execute batch_mm.
 
-                cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w], 1), cell2_state)
+                cell2_state = self.rnn_cell2(torch.cat([x[:,0,:], cell1_state[0], w], 1), cell2_state)
 
                 #output_list.append(cell2_state[0])
                 output_list[:, t,:] = cell2_state[0]
