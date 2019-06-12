@@ -26,7 +26,7 @@ if args.model_path and os.path.exists(args.model_path):
         strokes = model.sample(800)
     else:
         vec = vectorization(s, data_loader.char_to_indices)
-        strokes = model.sample(len(s) * args.points_per_char, s=s)
+        strokes = model.sample(len(s) * args.points_per_char, s=vec)
         
     print(strokes)
     draw_strokes_random_color(strokes, factor=0.1, svg_filename='images/sample.normal.svg')
