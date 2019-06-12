@@ -119,6 +119,7 @@ class Model(torch.nn.Module):
             w = torch.zeros(1, self.args.c_dimension).to(device)
             kappa_prev = torch.zeros(1, self.args.K, 1).to(device)
             
+        output_list = torch.zeros(self.args.batch_size, self.args.T, self.args.rnn_state_size).to(device)
         for t in range(length - 1):
             if self.args.mode == 'predict':
                 output_list, final_state = self.stacked_cell(torch.Tensor(x).to(device), final_state) # !!! The final state argument is important because the PyTorch LSTM would initialize its states otherwise. Hence, we suggest that we should alwayes call LSTM with its initial states. None represents the empty states.
@@ -136,11 +137,12 @@ class Model(torch.nn.Module):
 
                 self.phi = torch.sum(torch.exp(torch.pow(-self.u + self.kappa, 2) * (-beta)) * alpha, 1, keepdim=True) # (B, K, 1)
 
-                w = torch.squeeze(torch.matmul(self.phi, torch.Tensor([s]).to(device)), [1]) # torch.matmul can execute batch_mm.
+                w = torch.squeeze(torch.matmul(self.phi, torch.Tensor([s]).to(device)), 1) # torch.matmul can execute batch_mm.
 
                 cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w], 1), cell2_state)
 
-                output_list.append(cell2_state[0])
+                #output_list.append(cell2_state[0])
+                output_list[:, t,:] = cell2_state[0]
 
 
             output = self.fc_output(output_list.reshape(-1, self.args.rnn_state_size)) # (1, NOUT:121)
