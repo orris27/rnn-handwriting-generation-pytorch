@@ -69,7 +69,7 @@ class Model(torch.nn.Module):
 
                 cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w], 1), cell2_state)
 
-                self.output_list.append(cell2_state[0])
+                output_list.append(cell2_state[0])
 
         output = self.fc_output(output_list.reshape(-1, self.args.rnn_state_size)) # (batch_size * args.T, self.NOUT=121)
         y1, y2, y_end_of_stroke = torch.unbind(y.view(-1, 3), dim=1) # (batch_size * args.T, )
@@ -95,22 +95,50 @@ class Model(torch.nn.Module):
 
         self.loss = (loss_gaussian + loss_bernoulli) / (self.args.batch_size * self.args.T)
 
-
         self.optimizer.zero_grad()
         self.loss.backward()
         self.optimizer.step()
 
 
 
-    def sample(self, length, c_vec=None):
+    def sample(self, length, s=None):
         x = np.zeros([1, 1, 3], np.float32)
         x[0, 0, 2] = 1 # The first point state is set to be 1
         strokes = np.zeros([length, 3], dtype=np.float32)
         strokes[0, :] = x[0, 0, :]
 
-        final_state = None
+
+        if self.args.mode == 'predict':
+            final_state = None
+        else:
+            cell1_state, cell2_state = None, None
+            w = torch.zeros(1, self.args.c_dimension)
+            kappa_prev = torch.zeros(1, self.args.K, 1)
+            
         for i in range(length - 1):
-            output_list, final_state = self.stacked_cell(torch.Tensor(x).to(device), final_state) # !!! The final state argument is important because the PyTorch LSTM would initialize its states otherwise. Hence, we suggest that we should alwayes call LSTM with its initial states. None represents the empty states.
+            if args.mode == 'predict':
+                output_list, final_state = self.stacked_cell(torch.Tensor(x).to(device), final_state) # !!! The final state argument is important because the PyTorch LSTM would initialize its states otherwise. Hence, we suggest that we should alwayes call LSTM with its initial states. None represents the empty states.
+            else:
+                cell1_state = self.rnn_cell1(torch.cat([torch.Tensor(x).to(device)[:,t,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
+                k_gaussion = self.h2k(cell1_state[0]) # (B, K * 3)
+
+                alpha_hat, beta_hat, kappa_hat = torch.split(k_gaussian, k, dim=1) # (B, K)
+
+                alpha = torch.exp(alpha_hat).unsqueeze(2) # (B, K, 1)
+                beta = torch.exp(beta_hat).unsqueeze(2) # (B, K, 1)
+
+                self.kappa = kappa_prev + torch.exp(kappa_hat).unsqueeze(2) # (B, K, 1)
+                kappa_prev = self.kappa
+
+                self.phi = torch.sum(torch.exp(torch.pow(-self.u + self.kappa, 2) * (-beta)) * alpha, 1, keepdim=True) # (B, K, 1)
+
+                w = torch.squeeze(torch.matmul(self.phi, c_vec), [1]) # torch.matmul can execute batch_mm.
+
+                cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w], 1), cell2_state)
+
+                output_list.append(cell2_state[0])
+
+
             output = self.fc_output(output_list.reshape(-1, self.args.rnn_state_size)) # (1, NOUT:121)
             end_of_stroke = 1 / (1 + torch.exp(output[:, 0])) # (1, )
             pi_hat, mu1, mu2, sigma1_hat, sigma2_hat, rho_hat = torch.split(output[:, 1:], self.args.M, 1)
