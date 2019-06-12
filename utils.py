@@ -189,7 +189,7 @@ class DataLoader():
         self.load_preprocessed(data_file)
         self.reset_batch_pointer()
 
-    def preprocess(self, data_dir, data_file):
+    def preprocess(self, data_dir, data_file): # data_dir: './data/raw/lineStrokes'
         # create data file from raw xml files from iam handwriting source.
 
         # build the list of xml files
@@ -254,7 +254,7 @@ class DataLoader():
 
         def find_c_of_xml(filename):
             num = int(filename[-6: -4])
-            txt = open(filename.replace(data_dir, './data/ascii')[0:-7] + '.txt', 'r').readlines()
+            txt = open(filename.replace(data_dir, './data/raw/ascii')[0:-7] + '.txt', 'r').readlines()
             for i, t in enumerate(txt):
                 if t[0:4] == 'CSR:':
                     if (i + num + 1 < len(txt)):
