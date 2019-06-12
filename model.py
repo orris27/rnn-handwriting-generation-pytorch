@@ -19,12 +19,12 @@ class Model(torch.nn.Module):
         if args.mode == 'predict':
             self.stacked_cell = torch.nn.LSTM(input_size=3, hidden_size=args.rnn_state_size, num_layers=2, batch_first=True)
         else: # synthesis
-            self.rnn_cell1 = nn.LSTMCell(input_size=3, hidden_size=args.rnn_state_size, batch_first=True)
-            self.rnn_cell2 = nn.LSTMCell(input_size=3, hidden_size=args.rnn_state_size, batch_first=True)
+            self.rnn_cell1 = nn.LSTMCell(input_size=3, hidden_size=args.rnn_state_size)
+            self.rnn_cell2 = nn.LSTMCell(input_size=3, hidden_size=args.rnn_state_size)
             self.h2k = nn.Linear(args.rnn_state_size, args.K * 3)
             #self.init_kappa = torch.zeros([args.batch_size, args.c_dimension])
             #self.init_w =  
-            #u = expand(expand(np.array([i for i in range(args.U)], dtype=np.float32), 0, args.K), 0, args.batch_size)
+            self.u = expand(expand(np.array([i for i in range(args.U)], dtype=np.float32), 0, args.K), 0, args.batch_size)
 
         self.optimizer = torch.optim.Adam(params=self.parameters(), lr=args.learning_rate)
 
@@ -36,15 +36,41 @@ class Model(torch.nn.Module):
                (2 * np.pi * sigma1 * sigma2 * torch.sqrt(1 - torch.pow(rho, 2)))
    
 
-    def fit(self, x, y):
+    def fit(self, x, y, c_vec=None):
         '''
             x: (batch_size, args.T, 3) # args.T=300 if train else 1, (batch_size, T, 3)
             y: (batch_size, args.T, 3)
+            c_vec: (batch_size, 12, 54)
         '''
         x = torch.Tensor(x).to(device)
         y = torch.Tensor(y).to(device)
+        if args.mode == 'predict':
+            output_list, final_state = self.stacked_cell(x, None)
 
-        output_list, final_state = self.stacked_cell(x, None)
+        else: # synthesis
+            w = torch.zeros(self.args.batch_size, self.args.c_dimension)
+            kappa_prev = torch.zeros([args.batch_size, args.K, 1])
+            cell1_state, cell2_state = None, None
+
+            for t in range(args.T):
+                cell1_state = self.rnn_cell1(torch.cat([x[:,t,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
+                k_gaussion = self.h2k(cell1_state[0]) # (B, K * 3)
+
+                alpha_hat, beta_hat, kappa_hat = torch.split(k_gaussian, k, dim=1) # (B, K)
+
+                alpha = torch.exp(alpha_hat).unsqueeze(2) # (B, K, 1)
+                beta = torch.exp(beta_hat).unsqueeze(2) # (B, K, 1)
+
+                self.kappa = kappa_prev + torch.exp(kappa_hat).unsqueeze(2) # (B, K, 1)
+                kappa_prev = self.kappa
+
+                self.phi = torch.sum(torch.exp(torch.pow(-u + self.kappa, 2) * (-beta)) * alpha, 1, keepdim=True) # (B, K, 1)
+
+                w = torch.squeeze(torch.matmul(self.phi, c_vec), [1]) # torch.matmul can execute batch_mm.
+
+                cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w] 1), cell2_state)
+
+                self.output_list.append(cell2_state[0])
 
         output = self.fc_output(output_list.reshape(-1, self.args.rnn_state_size)) # (batch_size * args.T, self.NOUT=121)
 
@@ -76,6 +102,7 @@ class Model(torch.nn.Module):
         self.optimizer.zero_grad()
         self.loss.backward()
         self.optimizer.step()
+
 
 
     def sample(self, length, c_vec=None):
