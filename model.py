@@ -68,14 +68,12 @@ class Model(torch.nn.Module):
 
                 w = torch.squeeze(torch.matmul(self.phi, c_vec), [1]) # torch.matmul can execute batch_mm.
 
-                cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w] 1), cell2_state)
+                cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w], 1), cell2_state)
 
                 self.output_list.append(cell2_state[0])
 
         output = self.fc_output(output_list.reshape(-1, self.args.rnn_state_size)) # (batch_size * args.T, self.NOUT=121)
-
         y1, y2, y_end_of_stroke = torch.unbind(y.view(-1, 3), dim=1) # (batch_size * args.T, )
-
 
         end_of_stroke = 1 / (1 + torch.exp(output[:, 0])) # (batch_size * args.T,) 
         pi_hat, mu1, mu2, sigma1_hat, sigma2_hat, rho_hat = torch.split(output[:, 1:], self.args.M, 1)
