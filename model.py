@@ -16,17 +16,14 @@ class Model(torch.nn.Module):
         self.NOUT = 1 + self.args.M * 6  # end_of_stroke, num_of_gaussian * (pi + 2 * (mu + sigma) + rho)
         self.fc_output = torch.nn.Linear(args.rnn_state_size, self.NOUT)
 
-        if args.mode == 'predict':
-            self.stacked_cell = torch.nn.LSTM(input_size=3, hidden_size=args.rnn_state_size, num_layers=2, batch_first=True)
-        else: # synthesis
-            self.rnn_cell1 = nn.LSTMCell(input_size=3, hidden_size=args.rnn_state_size)
-            self.rnn_cell2 = nn.LSTMCell(input_size=3, hidden_size=args.rnn_state_size)
-            self.h2k = nn.Linear(args.rnn_state_size, args.K * 3)
-            #self.init_kappa = torch.zeros([args.batch_size, args.c_dimension])
-            #self.init_w =  
-            #self.u = expand(expand(np.array(list(args.U), dtype=np.float32), 0, args.K), 0, args.batch_size)
-            self.u = torch.arange(args.U).float().unsqueeze(0).repeat(args.K, 1) # (args.K, args.U)
-            self.u = self.u.unsqueeze(0).repeat(args.batch_size, 1, 1) # (B, args.K, args.U)
+        #if args.mode == 'predict':
+        self.stacked_cell = torch.nn.LSTM(input_size=3, hidden_size=args.rnn_state_size, num_layers=2, batch_first=True)
+        #else: # synthesis
+        self.rnn_cell1 = nn.LSTMCell(input_size=3, hidden_size=args.rnn_state_size)
+        self.rnn_cell2 = nn.LSTMCell(input_size=3, hidden_size=args.rnn_state_size)
+        self.h2k = nn.Linear(args.rnn_state_size, args.K * 3)
+        self.u = torch.arange(args.U).float().unsqueeze(0).repeat(args.K, 1) # (args.K, args.U)
+        self.u = self.u.unsqueeze(0).repeat(args.batch_size, 1, 1).to(device) # (B, args.K, args.U)
 
         self.optimizer = torch.optim.Adam(params=self.parameters(), lr=args.learning_rate)
 
@@ -50,8 +47,8 @@ class Model(torch.nn.Module):
             output_list, final_state = self.stacked_cell(x, None)
 
         else: # synthesis
-            w = torch.zeros(self.args.batch_size, self.args.c_dimension)
-            kappa_prev = torch.zeros([self.args.batch_size, self.args.K, 1])
+            w = torch.zeros(self.args.batch_size, self.args.c_dimension).to(device)
+            kappa_prev = torch.zeros([self.args.batch_size, self.args.K, 1]).to(device)
             cell1_state, cell2_state = None, None
 
             for t in range(self.args.T):
