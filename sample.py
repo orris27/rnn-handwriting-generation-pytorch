@@ -8,7 +8,8 @@ from config import *
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 data_loader = DataLoader(args.batch_size, args.T, args.data_scale,
                          chars=args.chars, points_per_char=args.points_per_char)
-s = 'a quick brown fox jumps over the lazy dog'
+#s = 'a quick brown fox jumps over the lazy dog'
+s = args.text
 # str = 'aaaaabbbbbccccc'
 args.U = len(s)
 args.c_dimension = len(data_loader.chars) + 1
