@@ -28,6 +28,5 @@ if args.model_path and os.path.exists(args.model_path):
         vec = onehot(s, data_loader.char_to_indices)
         strokes = model.sample(len(s) * args.points_per_char, s=s)
         
-        
     print(strokes)
     draw_strokes_random_color(strokes, factor=0.1, svg_filename='images/sample.normal.svg')

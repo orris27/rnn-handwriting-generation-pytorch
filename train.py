@@ -26,9 +26,14 @@ for e in range(args.num_epochs):
     data_loader.reset_batch_pointer()
     for b in range(data_loader.num_batches):
         x, y, c_vec, c = data_loader.next_batch()
-        model.fit(x, y)
+        if args.mode == 'predict':
+            model.fit(x, y)
+        else: # synthesis
+            model.fit(x, y, c_vec)
+
         if b % 100 == 0:
             print('batches %d: loss=%.6f'%(b, model.loss.cpu().item()))
+
     if e % 5 == 0:
         save_path = 'data/pkl/model_%d.pkl'%(e)
         print('Start saving model: %s'%(save_path))
