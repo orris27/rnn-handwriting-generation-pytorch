@@ -1,5 +1,6 @@
-import torch
 import numpy as np
+import torch
+import torch.nn as nn
 from utils import vectorization
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -14,7 +15,15 @@ class Model(torch.nn.Module):
 
         self.NOUT = 1 + self.args.M * 6  # end_of_stroke, num_of_gaussian * (pi + 2 * (mu + sigma) + rho)
         self.fc_output = torch.nn.Linear(args.rnn_state_size, self.NOUT)
-        self.stacked_cell = torch.nn.LSTM(input_size=3, hidden_size=args.rnn_state_size, num_layers=2, batch_first=True)
+
+        if args.mode == 'predict':
+            self.stacked_cell = torch.nn.LSTM(input_size=3, hidden_size=args.rnn_state_size, num_layers=2, batch_first=True)
+        else: # synthesis
+            self.rnn_cell1 = nn.LSTMCell(input_size=?, hidden_size=args.rnn_state_size, batch_first=True)
+            self.rnn_cell2 = nn.LSTMCell(input_size=?, hidden_size=args.rnn_state_size, batch_first=True)
+            self.h2k = nn.Linear(args.rnn_state_size, args.K * 3)
+            self.init_kappa = torch.zeros([args.batch_size, args.c_dimension])
+            self.init_w=  
 
         self.optimizer = torch.optim.Adam(params=self.parameters(), lr=args.learning_rate)
 

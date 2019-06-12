@@ -25,7 +25,7 @@ if args.model_path and os.path.exists(args.model_path):
     if args.mode == 'predict':
         strokes = model.sample(800)
     else:
-        vec = onehot(s, data_loader.char_to_indices)
+        vec = vectorization(s, data_loader.char_to_indices)
         strokes = model.sample(len(s) * args.points_per_char, s=s)
         
     print(strokes)
