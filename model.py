@@ -46,15 +46,15 @@ class Model(torch.nn.Module):
         '''
         x = torch.Tensor(x).to(device)
         y = torch.Tensor(y).to(device)
-        if args.mode == 'predict':
+        if self.args.mode == 'predict':
             output_list, final_state = self.stacked_cell(x, None)
 
         else: # synthesis
             w = torch.zeros(self.args.batch_size, self.args.c_dimension)
-            kappa_prev = torch.zeros([args.batch_size, args.K, 1])
+            kappa_prev = torch.zeros([self.args.batch_size, self.args.K, 1])
             cell1_state, cell2_state = None, None
 
-            for t in range(args.T):
+            for t in range(self.args.T):
                 cell1_state = self.rnn_cell1(torch.cat([x[:,t,:], w], 1), cell1_state) # input: (B, 3 + c_dimension)
                 k_gaussion = self.h2k(cell1_state[0]) # (B, K * 3)
 
