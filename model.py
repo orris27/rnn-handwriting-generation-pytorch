@@ -65,7 +65,7 @@ class Model(torch.nn.Module):
 
                 self.phi = torch.sum(torch.exp(torch.pow(-self.u + self.kappa, 2) * (-beta)) * alpha, 1, keepdim=True) # (B, K, 1)
 
-                w = torch.squeeze(torch.matmul(self.phi, c_vec), [1]) # torch.matmul can execute batch_mm.
+                w = torch.squeeze(torch.matmul(self.phi, torch.Tensor(c_vec).to(device)), [1]) # torch.matmul can execute batch_mm.
 
                 cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w], 1), cell2_state)
 
@@ -132,7 +132,7 @@ class Model(torch.nn.Module):
 
                 self.phi = torch.sum(torch.exp(torch.pow(-self.u + self.kappa, 2) * (-beta)) * alpha, 1, keepdim=True) # (B, K, 1)
 
-                w = torch.squeeze(torch.matmul(self.phi, c_vec), [1]) # torch.matmul can execute batch_mm.
+                w = torch.squeeze(torch.matmul(self.phi, torch.Tensor([s]).to(device)), [1]) # torch.matmul can execute batch_mm.
 
                 cell2_state = self.rnn_cell2(torch.cat([x[:,t,:], cell1_state[0], w], 1), cell2_state)
 
