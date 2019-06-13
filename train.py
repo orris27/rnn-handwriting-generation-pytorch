@@ -18,17 +18,22 @@ args.c_dimension = len(data_loader.chars) + 1
 args.action = 'train'
 
 model = m.Model(args).to(device)
-if args.load_path and os.path.exists(args.load_path):
-    print('Start loading model: %s'%(args.load_path))
-    model.load_state_dict(torch.load(args.load_path))
+if args.model_path and os.path.exists(args.model_path):
+    print('Start loading model: %s'%(args.model_path))
+    model.load_state_dict(torch.load(args.model_path))
 for e in range(args.num_epochs):
     print("epoch %d" % e)
     data_loader.reset_batch_pointer()
     for b in range(data_loader.num_batches):
         x, y, c_vec, c = data_loader.next_batch()
-        model.fit(x, y)
+        if args.mode == 'predict':
+            model.fit(x, y)
+        else: # synthesis
+            model.fit(x, y, c_vec)
+
         if b % 100 == 0:
             print('batches %d: loss=%.6f'%(b, model.loss.cpu().item()))
+
     if e % 5 == 0:
         save_path = 'data/pkl/model_%d.pkl'%(e)
         print('Start saving model: %s'%(save_path))

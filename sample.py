@@ -8,9 +8,10 @@ from config import *
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 data_loader = DataLoader(args.batch_size, args.T, args.data_scale,
                          chars=args.chars, points_per_char=args.points_per_char)
-str = 'a quick brown fox jumps over the lazy dog'
+#s = 'a quick brown fox jumps over the lazy dog'
+s = args.text
 # str = 'aaaaabbbbbccccc'
-args.U = len(str)
+args.U = len(s)
 args.c_dimension = len(data_loader.chars) + 1
 args.T = 1
 args.batch_size = 1
@@ -18,10 +19,15 @@ args.action = 'sample'
 
 model = m.Model(args).to(device)
 
-if args.load_path and os.path.exists(args.load_path):
-    model.load_state_dict(torch.load(args.load_path))
+if args.model_path and os.path.exists(args.model_path):
+    model.load_state_dict(torch.load(args.model_path))
     model = model.eval()
 
-    strokes = model.sample(800)
+    if args.mode == 'predict':
+        strokes = model.sample(800)
+    else:
+        vec = vectorization(s, data_loader.char_to_indices)
+        strokes = model.sample(len(s) * args.points_per_char, s=vec)
+        
     print(strokes)
-    draw_strokes_random_color(strokes, factor=0.1, svg_filename='sample' + '.normal.svg')
+    draw_strokes_random_color(strokes, factor=0.1, svg_filename='images/sample.normal.svg')
