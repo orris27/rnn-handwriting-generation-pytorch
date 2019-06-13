@@ -1,8 +1,8 @@
 import argparse
 
 parser = argparse.ArgumentParser()
-#parser.add_argument('--sample_random', type=bool, default=False,
-#                    help='apply random-control sample or not')
+parser.add_argument('--sample_random', type=bool, default=False,
+                    help='apply random-control sample or not')
 
 parser.add_argument('--text', type=str, default='a quick brown fox jumps over the lazy dog', help='')
 parser.add_argument('--mode', type=str, default='synthesis',
