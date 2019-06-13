@@ -170,8 +170,11 @@ def vectorization(c, char_dict):
 class DataLoader():
     def __init__(self, batch_size=50, seq_length=300, scale_factor = 10, limit = 500,
                  chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ',
-                 points_per_char=25):
-        self.data_dir = "./data/raw"
+                 points_per_char=25, data_dir='/content/data/raw'):
+        #self.data_dir = "/content//data/raw"
+        self.data_dir = data_dir
+        self.linestrokes_dir = os.path.join(self.data_dir, 'lineStrokes')
+
         self.batch_size = batch_size
         self.seq_length = seq_length
         self.scale_factor = scale_factor # divide data by this factor
@@ -180,22 +183,22 @@ class DataLoader():
         self.points_per_char = points_per_char
 
         data_file = os.path.join(self.data_dir, "strokes_training_data.cpkl")
-        raw_data_dir = self.data_dir+"/lineStrokes"
+        #raw_data_dir = self.data_dir+"/lineStrokes"
 
         if not (os.path.exists(data_file)) :
             print("creating training data pkl file from raw source")
-            self.preprocess(raw_data_dir, data_file)
+            self.preprocess(data_file)
 
         self.load_preprocessed(data_file)
         self.reset_batch_pointer()
 
-    def preprocess(self, data_dir, data_file): # data_dir: './data/raw/lineStrokes'
+    def preprocess(self, data_file): # data_dir: './data/raw/lineStrokes'
         # create data file from raw xml files from iam handwriting source.
 
         # build the list of xml files
         filelist = []
         # Set the directory you want to start from
-        rootDir = data_dir
+        rootDir = self.linestrokes_dir
         for dirName, subdirList, fileList in os.walk(rootDir):
             #print('Found directory: %s' % dirName)
             for fname in fileList:
@@ -252,9 +255,10 @@ class DataLoader():
                     counter += 1
             return stroke_data
 
-        def find_c_of_xml(filename):
+        def find_c_of_xml(filename): # filename: e.g., /content/data/raw/lineStrokes/b07/b07-580/b07-580z-05.xml
             num = int(filename[-6: -4])
-            txt = open(filename.replace(data_dir, './data/raw/ascii')[0:-7] + '.txt', 'r').readlines()
+            #txt = open(filename.replace(data_dir, './data/raw/ascii')[0:-7] + '.txt', 'r').readlines()
+            txt = open(filename.replace('lineStrokes', 'ascii')[0:-7] + '.txt', 'r').readlines()
             for i, t in enumerate(txt):
                 if t[0:4] == 'CSR:':
                     if (i + num + 1 < len(txt)):
