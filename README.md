@@ -24,10 +24,14 @@ python sample.py --load_path=data/pkl/model_25.pkl
 
 #### Handwriting Prediction
 
-![sample.normal.svg](./images/sample.normal.svg)
+![](./images/prediction.svg)
 This is the result with default setting:
 * rnn state size = 256
 * rnn length = 300
 * num of layers = 2
 * number of mixture gaussian = 20
 * epochs: 25
+
+#### Handwriting Synthesis
+![](./images/synthesis.svg)
++ model parameters file: `data/pkl/model_synthesis.pkl`
